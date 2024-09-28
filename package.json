@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "node make.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "uglify-js": "^3.19.3"
+  },
+  "name": "twitch-bot-commands",
+  "version": "1.0.0",
+  "description": "Twitch nightbot js command simple built system",
+  "main": "make.js",
+  "devDependencies": {},
+  "author": "Jacobtread",
+  "license": "MIT"
+}
