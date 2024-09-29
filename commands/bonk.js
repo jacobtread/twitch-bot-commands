@@ -1,22 +1,27 @@
-(() => {
-    // List of people that have already been bonked (Contains an entry for the person every time they've been bonked)
-    const bonkList = `$(urlfetch json https://twitch.center/customapi/quote/list?token={{REPLACE_ENV_BONK_PUBLIC_KEY}}&no_id=1)`
-        .split(`,`);
+const { urlfetch } = require("./lib/urlfetch");
 
-    // Triggers the API that will update the counter to add the new entry
-    const _ = `$(urlfetch https://twitch.center/customapi/addquote?token={{REPLACE_ENV_BONK_PRIVATE_KEY}}&data=$(touser),)`;
+// List of people that have already been bonked (Contains an entry for the person every time they've been bonked)
+const bonkList = (
+  await urlfetch(
+    "https://twitch.center/customapi/quote/list?token={{REPLACE_ENV_BONK_PUBLIC_KEY}}&no_id=1"
+  )
+).split(`,`);
 
-    // Number of times that user has been bonked
-    let bonkCount = 0;
+// Triggers the API that will update the counter to add the new entry
+const _ = `$(urlfetch https://twitch.center/customapi/addquote?token={{REPLACE_ENV_BONK_PRIVATE_KEY}}&data=$(touser),)`;
 
-    for (var i = 0; i < bonkList.length; i += 1) {
-        const value = bonkList[i];
+// Number of times that user has been bonked
+let bonkCount = 0;
 
-        // Increase counter for every time the target user is found
-        if (value === `$(touser)`) {
-            bonkCount++;
-        }
-    }
+for (var i = 0; i < bonkList.length; i += 1) {
+  const value = bonkList[i];
 
-    return `-----|_| $(user) has bonked $(touser). $(touser) has been bonked ${bonkCount + 1} times.`;
-})();
+  // Increase counter for every time the target user is found
+  if (value === `$(touser)`) {
+    bonkCount++;
+  }
+}
+
+export default `-----|_| $(user) has bonked $(touser). $(touser) has been bonked ${
+  bonkCount + 1
+} times.`;

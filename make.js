@@ -1,70 +1,66 @@
+require("dotenv").config();
 
-require('dotenv').config()
-
-const fs = require('fs');
-const path = require('path');
-const UglifyJS = require('uglify-js');
+const fs = require("fs");
+const path = require("path");
+const {
+  replacePlaceholders,
+  minifyCode,
+  transformRelease,
+} = require("./utils");
 
 function makeCommand(inputFile) {
+  // Run the minify function
+  const fileContent = fs.readFileSync(inputFile, "utf8"); // Read the input file
 
-    // Run the minify function
-    const fileContent = fs.readFileSync(inputFile, 'utf8'); // Read the input file
-    const result = UglifyJS.minify(fileContent, { ie8: true, toplevel: false, compress: false, output: {} }); // Minify the content
+  let code = transformRelease(inputFile, fileContent);
 
-    // Handle minify error
-    if (result.error) {
-        console.error('failed to minify: ', result.error);
-        return;
-    }
+  // Minify the code
+  code = minifyCode(code);
 
-    // Get the file name and directory
-    const ext = path.extname(inputFile);
-    const baseName = path.basename(inputFile, ext);
-    const buildDirName = path.join(__dirname, "build");
+  // Trip whitespace
+  code = code.trim();
 
-    // Create build dir if it doesn't exist
-    if (!fs.existsSync(buildDirName)) {
-        fs.mkdirSync(buildDirName);
-    }
+  // Replace the placeholders
+  code = replacePlaceholders(code);
 
-    // Create the new file name with .min.js extension
-    const outputFile = path.join(buildDirName, `${baseName}.min.js`);
+  // Strip the trailing semi-colon to make the command an expression
+  if (code.endsWith(";")) code = code.substring(0, code.length - 1);
 
-    let code = result.code.trim();
+  const newCode = `$(eval ${code})`;
 
-    // Replaces any environment variables (i.e {{REPLACE_ENV_BONK_KEY}})
-    // environment variables are prefixed with REPLACE_ENV_
-    for (const [key, value] of Object.entries(process.env)) {
-        const replaceKey = `REPLACE_ENV_${key}`;
-        code = code.replace(`{{${replaceKey}}}`, value);
-    }
+  // Get the file name and directory
+  const ext = path.extname(inputFile);
+  const baseName = path.basename(inputFile, ext);
+  const buildDirName = path.join(__dirname, "build");
 
-    // Strip the trailing semi-colon to make the command an expression
-    if (code.endsWith(';')) code = code.substring(0, code.length - 1)
+  // Create build dir if it doesn't exist
+  if (!fs.existsSync(buildDirName)) {
+    fs.mkdirSync(buildDirName);
+  }
 
-    const newCode = `$(eval ${code})`
+  // Create the new file name with .min.js extension
+  const outputFile = path.join(buildDirName, `${baseName}.min.js`);
 
-    // Write the minified content to the new file
-    fs.writeFileSync(outputFile, newCode, 'utf8');
+  // Write the minified content to the new file
+  fs.writeFileSync(outputFile, newCode, "utf8");
 
-    console.log(`generated command: ${outputFile}`);
+  console.log(`generated command: ${outputFile}`);
 }
 
-const commandsDir = path.join(__dirname, 'commands');
+const commandsDir = path.join(__dirname, "commands");
 const commands = fs.readdirSync(commandsDir, { encoding: "utf-8" });
 
 for (const commandFile of commands) {
+  const inputFile = path.join(commandsDir, commandFile);
 
-    const inputFile = path.join(commandsDir, commandFile);
+  // Get the file stats
+  const stat = fs.statSync(inputFile);
 
-    // Get the file stats
-    const stat = fs.statSync(inputFile);
+  // Ignore anything thats not a file
+  if (!stat.isFile()) continue;
 
-    // Ignore anything thats not a file
-    if (!stat.isFile()) continue;
+  console.log("making command " + inputFile);
 
-    console.log('making command ' + inputFile)
-
-    // Build the command
-    makeCommand(inputFile);
+  // Build the command
+  makeCommand(inputFile);
 }
