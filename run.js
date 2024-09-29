@@ -28,9 +28,10 @@ console.log("running command " + inputFile);
 runCommand(inputFile);
 
 async function runCommand(inputFile) {
-  // Run the minify function
-  const fileContent = fs.readFileSync(inputFile, "utf8"); // Read the input file
+  // Read the input file
+  const fileContent = fs.readFileSync(inputFile, "utf8");
 
+  // Transform the file so its ready to run
   let code = transformDev(inputFile, fileContent);
 
   // Minify the code

@@ -8,10 +8,29 @@ const {
   transformRelease,
 } = require("./utils");
 
-function makeCommand(inputFile) {
-  // Run the minify function
-  const fileContent = fs.readFileSync(inputFile, "utf8"); // Read the input file
+const commandsDir = path.join(__dirname, "commands");
+const commands = fs.readdirSync(commandsDir, { encoding: "utf-8" });
 
+for (const commandFile of commands) {
+  const inputFile = path.join(commandsDir, commandFile);
+
+  // Get the file stats
+  const stat = fs.statSync(inputFile);
+
+  // Ignore anything thats not a file
+  if (!stat.isFile()) continue;
+
+  console.log("making command " + inputFile);
+
+  // Build the command
+  buildCommand(inputFile);
+}
+
+function buildCommand(inputFile) {
+  // Read the input file
+  const fileContent = fs.readFileSync(inputFile, "utf8");
+
+  // Transform the code so its ready to run
   let code = transformRelease(inputFile, fileContent);
 
   // Minify the code
@@ -45,22 +64,4 @@ function makeCommand(inputFile) {
   fs.writeFileSync(outputFile, newCode, "utf8");
 
   console.log(`generated command: ${outputFile}`);
-}
-
-const commandsDir = path.join(__dirname, "commands");
-const commands = fs.readdirSync(commandsDir, { encoding: "utf-8" });
-
-for (const commandFile of commands) {
-  const inputFile = path.join(commandsDir, commandFile);
-
-  // Get the file stats
-  const stat = fs.statSync(inputFile);
-
-  // Ignore anything thats not a file
-  if (!stat.isFile()) continue;
-
-  console.log("making command " + inputFile);
-
-  // Build the command
-  makeCommand(inputFile);
 }
