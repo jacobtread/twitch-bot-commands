@@ -1,3 +1,18 @@
+/**
+ * Example Usage:
+ *
+ * !bonk {USER}
+ *
+ * Description:
+ *
+ * "Bonks" another user with a hammer, says the bonking message and a count for how
+ * many times that user has been "bonked" already.
+ *
+ * Example Response:
+ *
+ * -----|_| TestFromUser has bonked TestToUser. TestToUser has been bonked 12 times.
+ */
+
 const { urlfetch } = require("./lib/urlfetch");
 
 // List of people that have already been bonked (Contains an entry for the person every time they've been bonked)

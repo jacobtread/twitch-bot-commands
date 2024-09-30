@@ -1,3 +1,18 @@
+/**
+ * Example Usage:
+ *
+ * !bonk-leaderboard
+ *
+ * Description:
+ *
+ * Leaderboard for the !bonk command, lists the top 3 most bonked people and
+ * how many times each of them was bonked
+ *
+ * Example Response:
+ *
+ * Bonkers Leaderboard -----|_| 1st TestFromUser - 3 times
+ */
+
 const { urlfetch } = require("./lib/urlfetch");
 
 const userCounts =

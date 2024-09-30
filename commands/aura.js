@@ -1,3 +1,16 @@
+/**
+ * Example Usage:
+ *
+ * !aura
+ *
+ * Description:
+ *
+ * Tells the user a random message describing their "aura"
+ *
+ * Example Response:
+ *
+ * TestFromUser has no aura... wet piece of paper
+ */
 const adverbs = [
   "no aura... wet piece of paper",
   "INSANE aura its over nine thousand!!!!!!!",
