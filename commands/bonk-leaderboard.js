@@ -13,12 +13,12 @@
  * Bonkers Leaderboard -----|_| 1st TestFromUser - 3 times
  */
 
-const { urlfetch } = require("./lib/urlfetch");
+const { urlfetchJSON } = require("./lib/urlfetch");
 
 const userCounts =
   // List of people that have already been bonked (Contains an entry for the person every time they've been bonked)
   (
-    await urlfetch(
+    await urlfetchJSON(
       "https://twitch.center/customapi/quote/list?token={{REPLACE_ENV_BONK_PUBLIC_KEY}}&no_id=1"
     )
   )
